@@ -5,8 +5,6 @@ import java.util.Map;
 
 import org.springframework.http.HttpStatus;
 
-import com.alilm.campaign.endpoints.CampaignException;
-
 public class CampaignExceptionFactory {
 
 	private CampaignExceptionFactory() {}

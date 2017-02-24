@@ -1,4 +1,4 @@
-package com.alilm.campaign.endpoints;
+package com.alilm.campaign.exception;
 
 import com.alilm.campaign.vo.CampaignErrorVo;
 
