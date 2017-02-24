@@ -1,8 +1,9 @@
 package com.alilm.campaign.endpoints;
 
+import static com.alilm.campaign.helper.CampaignMessagesHelper.Errors.NOT_FOUND;
+import static com.alilm.campaign.helper.CampaignMessagesHelper.Errors.CAMPAIGN_EXPIRED;
 import static com.alilm.campaign.helper.CampaignMessagesHelper.Errors.GENERAL;
 import static com.alilm.campaign.helper.CampaignMessagesHelper.Errors.INVALID;
-import static com.alilm.campaign.helper.CampaignMessagesHelper.Errors.NOT_FOUND;
 import static javax.ws.rs.core.MediaType.APPLICATION_JSON;
 import static org.springframework.web.bind.annotation.RequestMethod.GET;
 import static org.springframework.web.bind.annotation.RequestMethod.POST;
@@ -20,7 +21,7 @@ import org.springframework.web.bind.annotation.RestController;
 
 import com.alilm.campaign.exception.CampaignExceptionFactory;
 import com.alilm.campaign.helper.CampaignMessagesHelper.Errors;
-import com.alilm.campaign.helper.MapUtils;
+import com.alilm.campaign.helper.CampaignUtils;
 import com.alilm.campaign.service.CampaignService;
 import com.alilm.campaign.vo.CampaignErrorVo;
 import com.alilm.campaign.vo.CampaignResponseVo;
@@ -66,6 +67,12 @@ public class CampaignRestEP {
 				CampaignErrorVo errVo = generateCampaignError(NOT_FOUND, HttpStatus.NOT_FOUND.value());
 				throw CampaignExceptionFactory.get(HttpStatus.NOT_FOUND.value()).addErrors(errVo);
 			}
+			if ( campaign.getAdVo() != null && campaign.getAdVo().isExpired() ) {
+				logger.debug("Campaign was expired for partnerId >> " + partnerId);
+				CampaignErrorVo errVo = generateCampaignError(CAMPAIGN_EXPIRED, HttpStatus.GONE.value());
+				throw CampaignExceptionFactory.get(HttpStatus.GONE.value()).addErrors(errVo);
+			}
+
 			return campaign;
 		} catch (NumberFormatException ex) {
 			logger.debug("Invalid input");
@@ -105,7 +112,7 @@ public class CampaignRestEP {
 		 * Step 1: validate the campaign for creation
 		 */
 		CampaignErrorVo errVo = campaignService.validate(campaignVo);
-		if ( errVo != null && MapUtils.isNotEmpty(errVo.getErrors()) ) {
+		if ( errVo != null && CampaignUtils.isNotEmpty(errVo.getErrors()) ) {
 			throw CampaignExceptionFactory.get(HttpStatus.NOT_ACCEPTABLE.value()).addErrors(errVo);
 		}
 		

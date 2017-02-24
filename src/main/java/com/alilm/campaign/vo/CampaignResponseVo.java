@@ -1,5 +1,7 @@
 package com.alilm.campaign.vo;
 
+import com.alilm.campaign.helper.CampaignUtils;
+
 public class CampaignResponseVo {
 
 	public static class CampaignResponseVoBuilder {
@@ -19,6 +21,7 @@ public class CampaignResponseVo {
 		}
 		public CampaignResponseVoBuilder setAdVo(CampaignVo adVo) {
 			this.adVo = adVo;
+			this.adVo.setExpiresOn(CampaignUtils.getExpirationDatetime(adVo.getDuration()));
 			return this;
 		}
 		
